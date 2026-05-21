@@ -10,7 +10,14 @@ const uri = process.env.MONGO_URI;
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors());
+app.use(cors({
+  origin: "https://wanderlust-delta-two.vercel.app",
+  credentials: true
+}));
+
+app.use(toNodeHandler(auth)); // ✅ routes এর আগে
+
+
 app.use(express.json())
 
 const client = new MongoClient(uri, {
