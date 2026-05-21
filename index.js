@@ -15,8 +15,6 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(toNodeHandler(auth)); // ✅ routes এর আগে
-
 
 app.use(express.json())
 
