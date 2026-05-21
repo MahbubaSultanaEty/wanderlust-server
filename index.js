@@ -43,13 +43,13 @@ const verifyToken = async(req, res, next) => {
     return res.status(403).json({ message: "Forbidden"})
 }
  
-  next()
+ 
 }
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("wanderlust");
     const destinationCollection = db.collection("destinations");
@@ -59,7 +59,7 @@ async function run() {
       res.json(result)
     })
 
-    app.post('/destination', async (req, res) => {
+    app.post('/destination',verifyToken, async (req, res) => {
       const destinationsData = req.body;
       // console.log(destinationsData, "destination data in the server");
       const result = await destinationCollection.insertOne(destinationsData);
@@ -72,10 +72,9 @@ async function run() {
       res.json(result)
     })
 
-    app.patch("/destination/:id", async (req, res) => {
+    app.patch("/destination/:id",verifyToken, async (req, res) => {
       const { id } = req.params;
       const updatedData = req.body;
-
       const result = await destinationCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: updatedData }
@@ -93,20 +92,20 @@ async function run() {
     
     });
 
-    app.get("/booking/:userId", async(req, res) => {
+    app.get("/booking/:userId",verifyToken, async(req, res) => {
       const { userId } = req.params;
       console.log(req.params.userId);
       const result = await bookingCollection.find({ userId: userId }).toArray();
       res.json(result);
     })
 
-    app.post("/booking", async (req, res) => {
+    app.post("/booking",verifyToken, async (req, res) => {
       const bookingData = req.body;
       const result = await bookingCollection.insertOne(bookingData);
        res.json(result)
     })
 
-    app.delete('/booking/:bookingId', async (req, res) => {
+    app.delete('/booking/:bookingId',verifyToken, async (req, res) => {
       const { bookingId } = req.params;
       const result = await bookingCollection.deleteOne({ _id: new ObjectId(bookingId) })
       
@@ -114,7 +113,7 @@ async function run() {
     })
  
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
